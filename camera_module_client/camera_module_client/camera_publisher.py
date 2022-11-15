@@ -33,14 +33,18 @@ class CameraPublisherNode(Node):
         camera_cb_group = ReentrantCallbackGroup()
         state_cb_group = ReentrantCallbackGroup()
 
-        self.state = "UNKNOWN"
 
         # Create a VideoCapture object
         # The argument '0' gets the default webcam.
         self.camera_value=0
-        self.cap = cv2.VideoCapture(self.camera_value)
+        self.cam = cv2.VideoCapture(self.camera_value)
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
+
+        if self.cam:
+            self.state="READY"
+        else:
+            self.state="ERROR"
 
         self.statePub = self.create_publisher(String, NODE_NAME + '/state', 10)
         self.stateTimer = self.create_timer(timer_period, self.stateCallback, callback_group = state_cb_group)
@@ -52,23 +56,18 @@ class CameraPublisherNode(Node):
         self.cameraPub_handler = self.create_timer(timer_period, callback = self.cameraCallback, callback_group = camera_cb_group)
 
 
-    
     def stateCallback(self):
         '''
         Publishes the state to the 'state' topic. 
         '''
+        if not self.cam:
+            self.state = "Error"
 
         msg = String()
         msg.data = 'State: %s' % self.state
         self.statePub.publish(msg)
         self.get_logger().info('Publishing: "%s"' % msg.data)
         # TODO: Add a state check before assigning state 
-        # if self.cap:
-        #   self.state="READY"
-        # else:
-        # self.state="ERROR"
-        self.state = "READY"
-
 
     def cameraCallback(self):
         """Callback function.
@@ -79,8 +78,10 @@ class CameraPublisherNode(Node):
         # This method returns True/False as well
         # as the video frame.
 
-        ret, frame = self.cap.read()
+        ret, frame = self.cam.read()
         if ret:
+            self.state = "Busy"
+            self.stateCallback()
             # Publish the image.
             # The 'cv2_to_imgmsg' method converts an OpenCV
             # image to a ROS 2 image message
@@ -90,9 +91,8 @@ class CameraPublisherNode(Node):
         self.get_logger().info("Publishing video frame")
 
 
-def main(args=None):  # noqa: D103
+def main(args=None):
 
-    # Initialize the rclpy library
     rclpy.init(args=args)
     try:
         camera_publisher_node = CameraPublisherNode()
