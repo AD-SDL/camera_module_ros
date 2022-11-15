@@ -5,6 +5,9 @@ import cv2  # OpenCV library
 import rclpy  # Python Client Library for ROS 2
 from cv_bridge import CvBridge  # Package to convert between ROS and OpenCV Images
 from rclpy.node import Node  # Handles the creation of nodes
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
+
 from std_msgs.msg import String
 from sensor_msgs.msg import Image  # Image is the message type
 from wei_services.srv import WeiActions  
@@ -26,24 +29,29 @@ class CameraPublisherNode(Node):
         # We will publish a message every 0.1 seconds
         timer_period = 0.1  # seconds
         # State publisher
+
+        camera_cb_group = ReentrantCallbackGroup()
+        state_cb_group = ReentrantCallbackGroup()
+
         self.state = "UNKNOWN"
-        self.statePub = self.create_publisher(String, NODE_NAME + '/state', 10)
-        self.stateTimer = self.create_timer(timer_period, self.stateCallback)
+
+        # Create a VideoCapture object
+        # The argument '0' gets the default webcam.
         self.camera_value=0
+        self.cap = cv2.VideoCapture(self.camera_value)
+        # Used to convert between ROS and OpenCV images
+        self.br = CvBridge()
+
+        self.statePub = self.create_publisher(String, NODE_NAME + '/state', 10)
+        self.stateTimer = self.create_timer(timer_period, self.stateCallback, callback_group = state_cb_group)
         # Initiate the Node class's constructor and give it a name
 
         # Create the publisher. This publisher will publish an Image
         # to the video_frames topic. The queue size is 10 messages.
         self.cameraPub = self.create_publisher(Image, NODE_NAME + "/video_frames", 10)
+        self.cameraPub_handler = self.create_timer(timer_period, callback = self.cameraCallback, callback_group = camera_cb_group)
 
-        self.action_handler = self.create_service(WeiActions, NODE_NAME + "/action_handler", self.actionCallback)
 
-        # Create a VideoCapture object
-        # The argument '0' gets the default webcam.
-        self.cap = cv2.VideoCapture(self.camera_value)
-
-        # Used to convert between ROS and OpenCV images
-        self.br = CvBridge()
     
     def stateCallback(self):
         '''
@@ -60,8 +68,7 @@ class CameraPublisherNode(Node):
         # else:
         # self.state="ERROR"
         self.state = "READY"
-        self.cameraCallback()
-        self.get_logger().info("Publishing video frame")
+
 
     def cameraCallback(self):
         """Callback function.
@@ -82,43 +89,26 @@ class CameraPublisherNode(Node):
         # Display the message on the console
         self.get_logger().info("Publishing video frame")
 
-    def actionCallback(self, request, response):
-        '''
-        The actionCallback function is a service that can be called to execute the available actions the robot
-        can preform.
-        '''
-        print("Action call....")
-        
-        if request.action_handle == "capture_image":
-
-            self.state = "BUSY"
-            self.stateCallback()
-            vars = eval(request.vars)
-            print(vars)
-
-            self.get_logger().info("Capturing image")
-            self.cameraCallback()
-            self.get_logger().info("Plate image saved.")
-
-            self.state = "COMPLETED"
-
-        return response
 
 def main(args=None):  # noqa: D103
 
     # Initialize the rclpy library
     rclpy.init(args=args)
+    try:
+        camera_publisher_node = CameraPublisherNode()
+        executor = MultiThreadedExecutor()
+        executor.add_node(camera_publisher_node)
 
-    # Create the node
-    node = CameraPublisherNode()
-
-    # Spin the node so the callback function is called.
-    rclpy.spin(node)
-
-    node.destroy_node()
-
-    # Shutdown the ROS client library for Python
-    rclpy.shutdown()
+        try:
+            camera_publisher_node.get_logger().info('Beginning client, shut down with CTRL-C')
+            executor.spin()
+        except KeyboardInterrupt:
+            camera_publisher_node.get_logger().info('Keyboard interrupt, shutting down.\n')
+        finally:
+            executor.shutdown()
+            camera_publisher_node.destroy_node()
+    finally:
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":
