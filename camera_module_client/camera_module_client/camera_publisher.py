@@ -12,7 +12,7 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image  # Image is the message type
 from wei_services.srv import WeiActions  
 
-
+from time import sleep
 class CameraPublisherNode(Node):
     """
     Create an ImagePublisher class, which is a subclass of the Node class.
@@ -40,7 +40,8 @@ class CameraPublisherNode(Node):
         self.cam = cv2.VideoCapture(self.camera_value)
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
-
+        
+        sleep(1)
         if self.cam:
             self.state="READY"
         else:
