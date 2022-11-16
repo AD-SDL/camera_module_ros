@@ -6,7 +6,6 @@ from rclpy.node import Node  # Handles the creation of nodes
 from std_msgs.msg import String
 from sensor_msgs.msg import Image  # Image is the message type
 from rclpy.qos import qos_profile_sensor_data
-from wei_services.srv import WeiActions  
 
 
 class CameraSubscriberNode(Node):
@@ -23,7 +22,7 @@ class CameraSubscriberNode(Node):
         super().__init__(NODE_NAME)
 
         # We will publish a message every 0.1 seconds
-        timer_period = 0.1  # seconds
+        timer_period = 0.05  # seconds
         # State publisher
         self.state = "UNKNOWN"
         self.statePub = self.create_publisher(String, NODE_NAME + '/state', 10)
@@ -44,21 +43,20 @@ class CameraSubscriberNode(Node):
         self.statePub.publish(msg)
         self.get_logger().info('Publishing: "%s"' % msg.data)
         self.state = "READY"
-        # self.cameraSubCallback()
 
     def cameraSubCallback(self, data):
-            """
-            Callback function.
-            """
-            # Display the message on the console
-            self.get_logger().info('Receiving video frame')
+        """
+        Callback function.
+        """
+        # Display the message on the console
+        self.get_logger().info('Receiving video frame')
+    
+        # Convert ROS Image message to OpenCV image
+        current_frame = self.br.imgmsg_to_cv2(data)
         
-            # Convert ROS Image message to OpenCV image
-            current_frame = self.br.imgmsg_to_cv2(data)
-            
-            # Display image
-            cv2.imshow("camera", current_frame)
-            cv2.waitKey(1)
+        # Display image
+        cv2.imshow("camera", current_frame)
+        cv2.waitKey(1)
    
 
 def main(args=None):  # noqa: D103

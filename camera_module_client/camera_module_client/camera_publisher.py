@@ -10,7 +10,6 @@ from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallb
 
 from std_msgs.msg import String
 from sensor_msgs.msg import Image  # Image is the message type
-from wei_services.srv import WeiActions  
 
 from time import sleep
 class CameraPublisherNode(Node):
@@ -27,7 +26,7 @@ class CameraPublisherNode(Node):
         super().__init__(NODE_NAME)
 
         # We will publish a message every 0.1 seconds
-        timer_period = 0.1  # seconds
+        timer_period = 0.05  # seconds
         # State publisher
 
         camera_cb_group = ReentrantCallbackGroup()
