@@ -33,7 +33,9 @@ setup(
     entry_points={
         'console_scripts': [
             'camera_publisher = camera_module_client.camera_publisher:main',
-            'camera_subscriber = camera_module_client.camera_subscriber:main'
+            'camera_subscriber = camera_module_client.camera_subscriber:main',
+            'capture_image = camera_module_client.capture_image:main'
+
 
         ],
     },
