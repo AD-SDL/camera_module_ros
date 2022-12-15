@@ -8,8 +8,8 @@ from rclpy.node import Node  # Handles the creation of nodes
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 
-from std_msgs.msg import String
 from sensor_msgs.msg import Image  # Image is the message type
+from wei_services.srv import WeiImage
 
 from time import sleep
 class CameraPublisherNode(Node):
@@ -30,8 +30,6 @@ class CameraPublisherNode(Node):
         # State publisher
 
         camera_cb_group = ReentrantCallbackGroup()
-        state_cb_group = ReentrantCallbackGroup()
-
 
         # Create a VideoCapture object
         # The argument '0' gets the default webcam.
@@ -39,35 +37,14 @@ class CameraPublisherNode(Node):
         self.cam = cv2.VideoCapture(self.camera_value)
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
-        
-        sleep(1)
-        if self.cam:
-            self.state="READY"
-        else:
-            self.state="ERROR"
-
-        self.statePub = self.create_publisher(String, NODE_NAME + '/state', 10)
-        self.stateTimer = self.create_timer(timer_period, self.stateCallback, callback_group = state_cb_group)
-        # Initiate the Node class's constructor and give it a name
+        self.current_image=None
 
         # Create the publisher. This publisher will publish an Image
         # to the video_frames topic. The queue size is 10 messages.
         self.cameraPub = self.create_publisher(Image, NODE_NAME + "/video_frames", 10)
         self.cameraPub_handler = self.create_timer(timer_period, callback = self.cameraCallback, callback_group = camera_cb_group)
 
-
-    def stateCallback(self):
-        '''
-        Publishes the state to the 'state' topic. 
-        '''
-        if not self.cam:
-            self.state = "Error"
-
-        msg = String()
-        msg.data = 'State: %s' % self.state
-        self.statePub.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
-        # TODO: Add a state check before assigning state 
+        self.grabService = self.create_service(WeiImage, NODE_NAME + "/grab_image", self.grabImage())
 
     def cameraCallback(self):
         """Callback function.
@@ -80,16 +57,17 @@ class CameraPublisherNode(Node):
 
         ret, frame = self.cam.read()
         if ret:
-            self.state = "Busy"
-            self.stateCallback()
             # Publish the image.
             # The 'cv2_to_imgmsg' method converts an OpenCV
             # image to a ROS 2 image message
-            self.cameraPub.publish(self.br.cv2_to_imgmsg(frame))
-
+            self.current_image = self.br.cv2_to_imgmsg(frame)
+            self.cameraPub.publish(self.current_image)
         # Display the message on the console
         self.get_logger().info("Publishing video frame")
 
+    def grabImage(self,response):
+            response.img = self.current_image
+            return response
 
 def main(args=None):
 
