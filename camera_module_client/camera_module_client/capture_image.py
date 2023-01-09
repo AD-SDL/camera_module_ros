@@ -10,12 +10,12 @@ from rclpy.qos import qos_profile_sensor_data
 def main(args=None):
     rclpy.init(args=None)
     node = rclpy.create_node('minimal_subscriber')
-    cameraSub = node.create_subscription(Image, "Camera_Publisher_Node/video_frames", save_image_callback, qos_profile_sensor_data)
+    cameraSub = node.create_subscription(Image, "/video_frames", save_image_callback, qos_profile_sensor_data)
     cameraSub
     # prevent unused variable warning
 
     rclpy.spin_once(node)
-    
+
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)

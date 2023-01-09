@@ -28,7 +28,7 @@ class CameraSubscriberNode(Node):
         self.statePub = self.create_publisher(String, NODE_NAME + '/state', 10)
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
-        self.cameraSub = self.create_subscription(Image, "Camera_Publisher_Node/video_frames", self.cameraSubCallback, qos_profile_sensor_data)
+        self.cameraSub = self.create_subscription(Image, "/video_frames", self.cameraSubCallback, qos_profile_sensor_data)
         self.cameraSub
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
@@ -53,6 +53,7 @@ class CameraSubscriberNode(Node):
     
         # Convert ROS Image message to OpenCV image
         current_frame = self.br.imgmsg_to_cv2(data)
+        self.get_logger().info("Recieved")
         
         # Display image
         cv2.imshow("camera", current_frame)

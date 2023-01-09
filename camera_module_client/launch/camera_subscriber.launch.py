@@ -8,7 +8,7 @@ def generate_launch_description():
     camera_module_client = Node(
             package = 'camera_module_client',
             namespace = 'camera_module_client',
-            executable = 'camera_subscription',
+            executable = 'capture_image',
             output = "screen",
             name='CameraSubscriber'
     )

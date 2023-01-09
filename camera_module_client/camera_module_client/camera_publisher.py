@@ -41,7 +41,7 @@ class CameraPublisherNode(Node):
 
         # Create the publisher. This publisher will publish an Image
         # to the video_frames topic. The queue size is 10 messages.
-        self.cameraPub = self.create_publisher(Image, NODE_NAME + "/video_frames", 10)
+        self.cameraPub = self.create_publisher(Image, "/video_frames", 10)
         self.cameraPub_handler = self.create_timer(timer_period, callback = self.cameraCallback, callback_group = camera_cb_group)
 
         self.grabService = self.create_service(WeiImage, NODE_NAME + "/grab_image", self.grabImage())
