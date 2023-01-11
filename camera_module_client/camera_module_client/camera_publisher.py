@@ -17,13 +17,14 @@ class CameraPublisherNode(Node):
     Create an ImagePublisher class, which is a subclass of the Node class.
     """
 
-    def __init__(self, NODE_NAME = "Camera_Publisher_Node"):
+    def __init__(self, TEMP_NODE_NAME = "Camera_Publisher_Node"):
 
         """
         Class constructor to set up the Camera node
         """
 
-        super().__init__(NODE_NAME)
+        super().__init__(TEMP_NODE_NAME)
+        node_name = self.get_name()
 
         # We will publish a message every 0.1 seconds
         timer_period = 0.05  # seconds
@@ -41,10 +42,9 @@ class CameraPublisherNode(Node):
 
         # Create the publisher. This publisher will publish an Image
         # to the video_frames topic. The queue size is 10 messages.
-        self.cameraPub = self.create_publisher(Image, "/video_frames", 10)
+        self.cameraPub = self.create_publisher(Image, node_name + "/video_frames", 10)
         self.cameraPub_handler = self.create_timer(timer_period, callback = self.cameraCallback, callback_group = camera_cb_group)
 
-        self.grabService = self.create_service(WeiImage, NODE_NAME + "/grab_image", self.grabImage())
 
     def cameraCallback(self):
         """Callback function.
