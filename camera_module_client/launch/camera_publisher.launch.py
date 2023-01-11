@@ -7,10 +7,10 @@ def generate_launch_description():
 
     camera_module_client = Node(
             package = 'camera_module_client',
-            namespace = 'camera_module_client',
+            namespace = 'std_ns',
             executable = 'camera_publisher',
             output = "screen",
-            name='CameraPublisher'
+            name='CameraPublisher1'
     )
 
     launch_d.add_action(camera_module_client)
