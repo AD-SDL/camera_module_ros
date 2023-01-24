@@ -27,8 +27,8 @@ class CameraPublisherNode(Node):
         node_name = self.get_name()
 
 
-        self.declare_parameter('camera_number', 0)       # Declaring parameter so it is able to be retrieved from module_params.yaml file
-        self.camera_number = self.get_parameter('camera_number').get_parameter_value().integer_value     # Renaming parameter to general form so it can be used for other nodes too
+        self.declare_parameter('camera_number', 0)       
+        self.camera_number = self.get_parameter('camera_number').get_parameter_value().integer_value    
         self.get_logger().info("Received Camera Name: " + node_name + " Camera number: " + str(self.camera_number))
 
         # We will publish a message every 0.1 seconds
@@ -39,8 +39,7 @@ class CameraPublisherNode(Node):
 
         # Create a VideoCapture object
         # The argument '0' gets the default webcam.
-        self.camera_value = self.camera_number
-        self.cam = cv2.VideoCapture(self.camera_value)
+        self.cam = cv2.VideoCapture(self.camera_number)
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
         self.current_image=None
