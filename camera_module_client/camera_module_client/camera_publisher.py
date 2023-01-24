@@ -26,6 +26,11 @@ class CameraPublisherNode(Node):
         super().__init__(TEMP_NODE_NAME)
         node_name = self.get_name()
 
+
+        self.declare_parameter('camera_number', 0)       # Declaring parameter so it is able to be retrieved from module_params.yaml file
+        self.camera_number = self.get_parameter('camera_number').get_parameter_value().integer_value     # Renaming parameter to general form so it can be used for other nodes too
+        self.get_logger().info("Received Camera Name: " + node_name + " Camera number: " + str(self.camera_number))
+
         # We will publish a message every 0.1 seconds
         timer_period = 0.05  # seconds
         # State publisher
@@ -34,7 +39,7 @@ class CameraPublisherNode(Node):
 
         # Create a VideoCapture object
         # The argument '0' gets the default webcam.
-        self.camera_value=0
+        self.camera_value = self.camera_number
         self.cam = cv2.VideoCapture(self.camera_value)
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
