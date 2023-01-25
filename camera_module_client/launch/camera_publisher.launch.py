@@ -13,7 +13,7 @@ def generate_launch_description():
     camera_number = LaunchConfiguration('camera_number')
 
     declare_use_camera_name_cmd = DeclareLaunchArgument(
-        naem = "camera_name",
+        name = "camera_name",
         default_value='CameraPublisher1',
         description='Flag to accept camera name')
 
