@@ -9,7 +9,6 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 
 from sensor_msgs.msg import Image  # Image is the message type
-from wei_services.srv import WeiImage
 
 from time import sleep
 class CameraPublisherNode(Node):
@@ -32,7 +31,7 @@ class CameraPublisherNode(Node):
         self.get_logger().info("Received Camera Name: " + node_name + " Camera number: " + str(self.camera_number))
 
         # We will publish a message every 0.1 seconds
-        timer_period = 0.05  # seconds
+        timer_period = 1  # seconds
         # State publisher
 
         camera_cb_group = ReentrantCallbackGroup()
@@ -65,6 +64,7 @@ class CameraPublisherNode(Node):
             # The 'cv2_to_imgmsg' method converts an OpenCV
             # image to a ROS 2 image message
             self.current_image = self.br.cv2_to_imgmsg(frame)
+            sleep(1)
             self.cameraPub.publish(self.current_image)
         # Display the message on the console
         self.get_logger().info("Publishing video frame")
