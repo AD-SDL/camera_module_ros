@@ -9,7 +9,6 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 
 from sensor_msgs.msg import Image  # Image is the message type
-from wei_services.srv import WeiImage
 
 from time import sleep
 class CameraPublisherNode(Node):
