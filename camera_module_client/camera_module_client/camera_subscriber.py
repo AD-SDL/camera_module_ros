@@ -13,22 +13,27 @@ class CameraSubscriberNode(Node):
     Create an ImagePublisher class, which is a subclass of the Node class.
     """
 
-    def __init__(self, NODE_NAME = "Camera_Subscriber_Node"):
+    def __init__(self, TEMP_NODE_NAME = "Camera_Subscriber_Node"):
 
         """
         Class constructor to set up the Camera node
         """
 
-        super().__init__(NODE_NAME)
+        super().__init__(TEMP_NODE_NAME)
+        node_name = self.get_name()
+
+        self.declare_parameter('camera_name', "camera_module")       
+        self.camera_name = self.get_parameter('camera_name').get_parameter_value().string_value    
+        self.get_logger().info("Received Camera Name: " + self.camera_name)
 
         # We will publish a message every 0.1 seconds
         timer_period = 0.05  # seconds
         # State publisher
         self.state = "UNKNOWN"
-        self.statePub = self.create_publisher(String, NODE_NAME + '/state', 10)
-        self.stateTimer = self.create_timer(timer_period, self.stateCallback)
+        self.statePub = self.create_publisher(String, node_name + '/state', 10)
+        # self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
-        self.cameraSub = self.create_subscription(Image, "/video_frames", self.cameraSubCallback, qos_profile_sensor_data)
+        self.cameraSub = self.create_subscription(Image,  self.camera_name + "/video_frames", self.cameraSubCallback, qos_profile_sensor_data)
         self.cameraSub
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
@@ -56,8 +61,8 @@ class CameraSubscriberNode(Node):
         self.get_logger().info("Recieved")
         
         # Display image
-        cv2.imshow("camera", current_frame)
-        cv2.waitKey(1)
+        # cv2.imshow(self.camera_name, current_frame)
+        # cv2.waitKey(1)
    
 
 def main(args=None):  # noqa: D103
