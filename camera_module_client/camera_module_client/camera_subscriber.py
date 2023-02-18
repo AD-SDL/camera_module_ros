@@ -61,8 +61,8 @@ class CameraSubscriberNode(Node):
         self.get_logger().info("Recieved")
         
         # Display image
-        # cv2.imshow(self.camera_name, current_frame)
-        # cv2.waitKey(1)
+        cv2.imshow(self.camera_name, current_frame)
+        cv2.waitKey(1)
    
 
 def main(args=None):  # noqa: D103
