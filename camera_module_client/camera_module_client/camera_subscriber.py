@@ -1,5 +1,6 @@
 
 import cv2  # OpenCV library
+from PIL import Image as pilimage
 import rclpy  # Python Client Library for ROS 2
 from cv_bridge import CvBridge  # Package to convert between ROS and OpenCV Images
 from rclpy.node import Node  # Handles the creation of nodes
@@ -61,8 +62,11 @@ class CameraSubscriberNode(Node):
         self.get_logger().info("Recieved")
         
         # Display image
-        cv2.imshow(self.camera_name, current_frame)
-        cv2.waitKey(1)
+        
+        img2 = pilimage.fromarray(current_frame, 'RGB')
+        img2.show()
+        # cv2.imshow(self.camera_name, current_frame)
+        # cv2.waitKey(1)
    
 
 def main(args=None):  # noqa: D103
