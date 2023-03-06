@@ -31,7 +31,7 @@ class CameraPublisherNode(Node):
         self.get_logger().info("Received Camera Name: " + node_name + " Camera number: " + str(self.camera_number))
 
         # We will publish a message every 0.1 seconds
-        timer_period = 1  # seconds
+        timer_period =  1 # seconds
         # State publisher
 
         camera_cb_group = ReentrantCallbackGroup()
