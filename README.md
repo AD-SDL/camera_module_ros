@@ -14,6 +14,11 @@ A repository for ROS2 camera packages.
 - `colcon build`
 - `source install/setup.bash`
 
+## ROS2 Update Code on Node:
+- `git pull`
+- `colcon build`
+- `source install/setup.bash`
+
 ## ROS2 Launch
 Launching the publisher
 - `ros2 launch camera_module_client camera_publisher.launch.py`
