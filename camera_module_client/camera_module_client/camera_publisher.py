@@ -100,7 +100,7 @@ class CameraPublisherNode(Node):
             sleep(0.05)
             self.cameraPub.publish(self.current_image)
         # Display the message on the console
-        self.get_logger().info("Publiasdfasdfsadfshing video frame")
+        self.get_logger().info("Publishing video frame")
 
     def grabImage(self,response):
             response.img = self.current_image
