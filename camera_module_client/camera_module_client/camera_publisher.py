@@ -58,7 +58,7 @@ class CameraPublisherNode(Node):
         self.get_logger().info("Received Camera Name: " + node_name + " Camera number: " + str(self.camera_number))
 
         # We will publish a message every 0.1 seconds
-        timer_period =  0.1 # seconds
+        timer_period =  1 # seconds
         # State publisher
 
         camera_cb_group = ReentrantCallbackGroup()
@@ -97,7 +97,7 @@ class CameraPublisherNode(Node):
             # image to a ROS 2 image message
             frame =  cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             self.current_image = self.br.cv2_to_imgmsg(frame)
-            sleep(0.05)
+            sleep(1)
             self.cameraPub.publish(self.current_image)
         # Display the message on the console
         self.get_logger().info("Publishing video frame")
