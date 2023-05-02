@@ -11,33 +11,6 @@ from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallb
 from sensor_msgs.msg import Image  # Image is the message type
 
 from time import sleep
-
-import cv2, queue, threading
-class VideoCapture:
-
-  def __init__(self, name):
-    self.cap = cv2.VideoCapture(name)
-    self.q = queue.Queue()
-    t = threading.Thread(target=self._reader)
-    t.daemon = True
-    t.start()
-
-  # read frames as soon as they are available, keeping only most recent one
-  def _reader(self):
-    while True:
-      ret, frame = self.cap.read()
-      if not ret:
-        break
-      if not self.q.empty():
-        try:
-          self.q.get_nowait()   # discard previous (unprocessed) frame
-        except queue.Empty:
-          pass
-      self.q.put(frame)
-
-  def read(self):
-    return self.q.get()
-
 class CameraPublisherNode(Node):
     """
     Create an ImagePublisher class, which is a subclass of the Node class.
@@ -66,18 +39,18 @@ class CameraPublisherNode(Node):
         # Create a VideoCapture object
         # The argument '0' gets the default webcam.
         if self.camera_number == 0:
-           self.cam = VideoCapture(self.camera_number)
+           self.cam = cv2.VideoCapture(self.camera_number)
         else:
            url = 'rtsp://admin:123@rplcam' + str(self.camera_number) + '.cels.anl.gov:8554/profile1'
-           self.cam = VideoCapture(url)
+           self.cam = cv2.VideoCapture(url)
         # Used to convert between ROS and OpenCV images
-        #self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 2)
+        self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 2)
         self.br = CvBridge()
         self.current_image=None
 
         # Create the publisher. This publisher will publish an Image
         # to the video_frames topic. The queue size is 10 messages.
-        self.cameraPub = self.create_publisher(Image, node_name + "/video_frames", 1)
+        self.cameraPub = self.create_publisher(Image, node_name + "/video_frames", 2)
         self.cameraPub_handler = self.create_timer(timer_period, callback = self.cameraCallback, callback_group = camera_cb_group)
 
 
@@ -89,8 +62,8 @@ class CameraPublisherNode(Node):
         # Capture frame-by-frame
         # This method returns True/False as well
         # as the video frame.
-        ret = True
-        frame = self.cam.read()
+
+        ret, frame = self.cam.read()
         if ret:
             # Publish the image.
             # The 'cv2_to_imgmsg' method converts an OpenCV
