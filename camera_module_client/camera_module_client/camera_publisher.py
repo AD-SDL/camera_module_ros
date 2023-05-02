@@ -31,21 +31,26 @@ class CameraPublisherNode(Node):
         self.get_logger().info("Received Camera Name: " + node_name + " Camera number: " + str(self.camera_number))
 
         # We will publish a message every 0.1 seconds
-        timer_period =  1 # seconds
+        timer_period =  0.1 # seconds
         # State publisher
 
         camera_cb_group = ReentrantCallbackGroup()
 
         # Create a VideoCapture object
         # The argument '0' gets the default webcam.
-        self.cam = cv2.VideoCapture(self.camera_number)
+        if self.camera_number == 0:
+           self.cam = cv2.VideoCapture(self.camera_number)
+        else:
+           url = 'rtsp://admin:123@rplcam' + str(self.camera_number) + '.cels.anl.gov:8554/profile1'
+           self.cam = cv2.VideoCapture(url)
         # Used to convert between ROS and OpenCV images
+        self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 2)
         self.br = CvBridge()
         self.current_image=None
 
         # Create the publisher. This publisher will publish an Image
         # to the video_frames topic. The queue size is 10 messages.
-        self.cameraPub = self.create_publisher(Image, node_name + "/video_frames", 10)
+        self.cameraPub = self.create_publisher(Image, node_name + "/video_frames", 2)
         self.cameraPub_handler = self.create_timer(timer_period, callback = self.cameraCallback, callback_group = camera_cb_group)
 
 
@@ -64,10 +69,10 @@ class CameraPublisherNode(Node):
             # The 'cv2_to_imgmsg' method converts an OpenCV
             # image to a ROS 2 image message
             self.current_image = self.br.cv2_to_imgmsg(frame)
-            sleep(1)
+            sleep(0.05)
             self.cameraPub.publish(self.current_image)
         # Display the message on the console
-        self.get_logger().info("Publishing video frame")
+        self.get_logger().info("Publiasdfasdfsadfshing video frame")
 
     def grabImage(self,response):
             response.img = self.current_image

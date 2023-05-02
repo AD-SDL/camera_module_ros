@@ -38,9 +38,7 @@ class CameraPublisherNode(Node):
 
         # Create a VideoCapture object
         # The argument '0' gets the default webcam.
-        url = 'rtsp://admin:123@rplcam' + str(self.camera_number) + '.cels.anl.gov:8554/profile0'
-        self.get_logger().info(str(url))
-        self.cam = cv2.VideoCapture(url)
+        self.cam = cv2.VideoCapture(self.camera_number)
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
         self.current_image=None
@@ -69,7 +67,7 @@ class CameraPublisherNode(Node):
             sleep(1)
             self.cameraPub.publish(self.current_image)
         # Display the message on the console
-        self.get_logger().info("Publiasdfasdfsadfshing video frame")
+        self.get_logger().info("Publishing video frame")
 
     def grabImage(self,response):
             response.img = self.current_image
