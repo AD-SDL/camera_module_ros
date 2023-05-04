@@ -105,7 +105,7 @@ class CameraPublisherNode(Node):
             # Publish the image.
             # The 'cv2_to_imgmsg' method converts an OpenCV
             # image to a ROS 2 image message
-            frame =  cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            #frame =  cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             self.current_image = self.br.cv2_to_imgmsg(frame)
             sleep(1)
             self.cameraPub.publish(self.current_image)
