@@ -8,6 +8,7 @@ from rclpy.node import Node  # Handles the creation of nodes
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from sensor_msgs.msg import Image  # Image is the message type
 
 from time import sleep
@@ -39,16 +40,25 @@ class VideoCapture:
     return self.q.get()
 
 class CameraPublisherNode(Node):
+    qos_profile1 = QoSProfile(
+            reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
+            history=QoSHistoryPolicy.RMW_QOS_POLICY_HISTORY_KEEP_LAST,
+            depth=1
+        )
     """
     Create an ImagePublisher class, which is a subclass of the Node class.
     """
 
     def __init__(self, TEMP_NODE_NAME = "Camera_Publisher_Node"):
-
+        
         """
         Class constructor to set up the Camera node
         """
-
+        qos_profile1 = QoSProfile(
+            reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
+            history=QoSHistoryPolicy.RMW_QOS_POLICY_HISTORY_KEEP_LAST,
+            depth=1
+        )
         super().__init__(TEMP_NODE_NAME)
         node_name = self.get_name()
 
@@ -77,7 +87,7 @@ class CameraPublisherNode(Node):
 
         # Create the publisher. This publisher will publish an Image
         # to the video_frames topic. The queue size is 10 messages.
-        self.cameraPub = self.create_publisher(Image, node_name + "/video_frames", 1)
+        self.cameraPub = self.create_publisher(Image, node_name + "/video_frames", 1, qos_profile=qos_profile1)
         self.cameraPub_handler = self.create_timer(timer_period, callback = self.cameraCallback, callback_group = camera_cb_group)
 
 
