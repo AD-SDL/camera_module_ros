@@ -1,5 +1,6 @@
-# camera_module
-A repository for ROS2 camera packages.
+# camera_ros_packages
+
+A repository for ROS2 camera packages for the RPL.
 
 ## ROS2 Install
 - `cd ~`
