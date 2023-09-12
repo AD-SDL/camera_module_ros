@@ -8,7 +8,7 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-        
+
     camera_name = LaunchConfiguration('camera_name')
     camera_number = LaunchConfiguration('camera_number')
 
@@ -22,8 +22,8 @@ def generate_launch_description():
         default_value="0",
         description='Flag to accept camera number')
 
-    camera_module_client = Node(
-            package = 'camera_module_client',
+    camera_ros_client = Node(
+            package = 'camera_ros_client',
             namespace = 'std_ns',
             executable = 'camera_publisher',
             output = "screen",
@@ -36,5 +36,5 @@ def generate_launch_description():
 
     launch_d.add_action(declare_use_camera_name_cmd)
     launch_d.add_action(declare_use_camera_number_cmd)
-    launch_d.add_action(camera_module_client)
+    launch_d.add_action(camera_ros_client)
     return launch_d

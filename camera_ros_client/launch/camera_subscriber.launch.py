@@ -9,7 +9,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     launch_d = LaunchDescription()
-    
+
     camera_name = LaunchConfiguration('camera_name')
 
     declare_use_camera_name_cmd = DeclareLaunchArgument(
@@ -17,8 +17,8 @@ def generate_launch_description():
         default_value='CameraSubscriber1',
         description='Flag to accept camera name')
 
-    camera_module_client = Node(
-            package = 'camera_module_client',
+    camera_ros_client = Node(
+            package = 'camera_ros_client',
             namespace = 'std_ns',
             executable = 'camera_subscriber',
             output = "screen",
@@ -29,6 +29,5 @@ def generate_launch_description():
     )
 
     launch_d.add_action(declare_use_camera_name_cmd)
-    launch_d.add_action(camera_module_client)
+    launch_d.add_action(camera_ros_client)
     return launch_d
-    

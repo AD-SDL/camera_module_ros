@@ -20,15 +20,17 @@ A repository for ROS2 camera packages.
 - `source install/setup.bash`
 
 ## ROS2 Launch
+
 Launching the publisher
-- `ros2 launch camera_module_client camera_publisher.launch.py`
+- `ros2 launch camera_ros_client camera_publisher.launch.py`
 Launching the subscriber
-- `ros2 launch camera_module_client camera_subscriber.launch.py`
+- `ros2 launch camera_ros_client camera_subscriber.launch.py`
+
 ### ROS2 Launch with Launch Parameters
 Launching the publisher
-- `ros2 launch camera_module_client camera_publisher.launch.py camera_name:=camera_module camera_number:=1`
+- `ros2 launch camera_ros_client camera_publisher.launch.py camera_name:=camera_module camera_number:=1`
 - Camera name refers to the node name which will also be used in the topic name.
-- Camera number refers to the device number 
+- Camera number refers to the device number
 Launching the subscriber
-- `ros2 launch camera_module_client camera_subscriber.launch.py camera_name:=camera_module`
+- `ros2 launch camera_ros_client camera_subscriber.launch.py camera_name:=camera_module`
 - In order to subscribe to the correct camera publisher, corresponding node name should be entered to "camera_name" parameter
