@@ -10,7 +10,7 @@ install_requires_list = ["setuptools", "opencv-python"]
 #             continue
 #         install_requires_list.append(req)
 
-package_name = 'camera_module_client'
+package_name = 'camera_ros_client'
 
 setup(
     name = package_name,
@@ -32,9 +32,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'camera_publisher = camera_module_client.camera_publisher:main',
-            'camera_subscriber = camera_module_client.camera_subscriber:main',
-            'capture_image = camera_module_client.capture_image:main'
+            'camera_publisher = camera_ros_client.camera_publisher:main',
+            'camera_subscriber = camera_ros_client.camera_subscriber:main',
+            'capture_image = camera_ros_client.capture_image:main'
 
 
         ],
